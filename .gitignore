@@ -1,0 +1,9 @@
+.DS_Store
+
+# Build outputs and temporary files
+bin/
+build/
+tmp/
+
+# Local runtime artifacts
+hysteria-darwin-arm64
