@@ -1,0 +1,23 @@
+{
+  "type": "xray-reality",
+  "name": "Withard Vpn White List 2",
+  "server": {
+    "host": "144.31.13.152",
+    "port": 2443
+  },
+  "uuid": "193d46ca-b199-4c29-9f1e-5efa1a8dbf2c",
+  "flow": "xtls-rprx-vision",
+  "reality": {
+    "public_key": "8eCGHdZbpmPEGyzy1_TNtVVBtzVZg7UmJxbvO1_70kY",
+    "short_id": "0509bdb253e2471f",
+    "server_name": "www.cloudflare.com",
+    "fingerprint": "chrome"
+  },
+  "local": {
+    "socks_address": "127.0.0.1:19080",
+    "http_address": "127.0.0.1:19081"
+  },
+  "engine": {
+    "binary": "/opt/homebrew/bin/xray"
+  }
+}
