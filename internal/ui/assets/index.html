@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>VPN Client</title>
+  <style>
+    :root {
+      --bg: #eee6d8;
+      --panel: rgba(255, 252, 246, 0.9);
+      --panel-border: rgba(36, 43, 31, 0.12);
+      --text: #1f241c;
+      --muted: #5e6655;
+      --accent: #0d7a51;
+      --accent-strong: #09563a;
+      --danger: #a43f30;
+      --soft: rgba(36, 43, 31, 0.08);
+      --glow: rgba(13, 122, 81, 0.16);
+      --shadow: 0 24px 70px rgba(42, 48, 34, 0.14);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Avenir Next", "Helvetica Neue", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(13, 122, 81, 0.16), transparent 32%),
+        radial-gradient(circle at bottom right, rgba(194, 128, 53, 0.18), transparent 26%),
+        linear-gradient(145deg, #ece4d8 0%, #f6f1e7 46%, #ece3d6 100%);
+      padding: 34px 18px;
+    }
+
+    .shell {
+      max-width: 1160px;
+      margin: 0 auto;
+      display: grid;
+      gap: 22px;
+    }
+
+    .hero,
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--panel-border);
+      border-radius: 30px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+    }
+
+    .hero {
+      display: grid;
+      gap: 14px;
+      padding: 28px 30px;
+    }
+
+    .eyebrow {
+      font-size: 12px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      font-weight: 700;
+      color: var(--accent);
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(34px, 5vw, 58px);
+      line-height: 0.92;
+      letter-spacing: -0.05em;
+      max-width: 760px;
+    }
+
+    .subtitle {
+      margin: 0;
+      max-width: 760px;
+      font-size: 17px;
+      line-height: 1.6;
+      color: var(--muted);
+    }
+
+    .tabbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .tab {
+      border: 0;
+      border-radius: 999px;
+      padding: 11px 18px;
+      font: 700 14px/1 "Avenir Next", "Helvetica Neue", sans-serif;
+      cursor: pointer;
+      background: rgba(36, 43, 31, 0.08);
+      color: var(--text);
+      transition: transform 140ms ease, background 140ms ease, color 140ms ease;
+    }
+
+    .tab:hover {
+      transform: translateY(-1px);
+    }
+
+    .tab.active {
+      background: var(--accent);
+      color: #fffbf4;
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+    }
+
+    .view {
+      display: none;
+      grid-template-columns: minmax(0, 1.4fr) minmax(300px, 0.86fr);
+      gap: 22px;
+    }
+
+    .view.active {
+      display: grid;
+    }
+
+    .panel-inner {
+      display: grid;
+      gap: 18px;
+      padding: 24px;
+    }
+
+    .panel h2 {
+      margin: 0;
+      font-size: 14px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .headline {
+      display: grid;
+      gap: 8px;
+    }
+
+    .headline strong {
+      font-size: 32px;
+      line-height: 0.95;
+      letter-spacing: -0.04em;
+    }
+
+    .headline p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .cta-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+    }
+
+    button,
+    .file-label {
+      border: 0;
+      border-radius: 999px;
+      padding: 13px 18px;
+      font: 700 14px/1 "Avenir Next", "Helvetica Neue", sans-serif;
+      cursor: pointer;
+      transition: transform 140ms ease, opacity 140ms ease, background 140ms ease;
+    }
+
+    button:hover,
+    .file-label:hover {
+      transform: translateY(-1px);
+    }
+
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .primary {
+      background: var(--accent);
+      color: #fffdf8;
+    }
+
+    .secondary {
+      background: rgba(36, 43, 31, 0.08);
+      color: var(--text);
+    }
+
+    .danger {
+      background: var(--danger);
+      color: #fff7f5;
+    }
+
+    .support {
+      background: rgba(195, 132, 54, 0.15);
+      color: #714614;
+    }
+
+    .status-well {
+      padding: 18px 20px;
+      border-radius: 24px;
+      background: linear-gradient(135deg, rgba(13, 122, 81, 0.12), rgba(13, 122, 81, 0.04));
+      border: 1px solid rgba(13, 122, 81, 0.1);
+      display: grid;
+      gap: 12px;
+    }
+
+    .status-badge {
+      display: inline-flex;
+      width: fit-content;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: rgba(13, 122, 81, 0.12);
+      color: var(--accent-strong);
+      font-weight: 700;
+    }
+
+    .status-badge.idle,
+    .status-badge.connecting {
+      background: rgba(36, 43, 31, 0.08);
+      color: var(--text);
+    }
+
+    .status-badge.error {
+      background: rgba(164, 63, 48, 0.12);
+      color: var(--danger);
+    }
+
+    .status-message {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .profile-card {
+      display: grid;
+      gap: 14px;
+    }
+
+    .facts {
+      display: grid;
+      gap: 14px;
+    }
+
+    .fact {
+      display: grid;
+      gap: 6px;
+      border-top: 1px solid rgba(36, 43, 31, 0.08);
+      padding-top: 14px;
+    }
+
+    .fact-label {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: var(--muted);
+    }
+
+    .fact-value {
+      font: 600 15px/1.45 "SF Mono", "Menlo", "Consolas", monospace;
+      word-break: break-word;
+    }
+
+    .note,
+    .hint {
+      border-radius: 22px;
+      padding: 16px 18px;
+      line-height: 1.6;
+      color: var(--muted);
+    }
+
+    .note {
+      background: rgba(13, 122, 81, 0.08);
+    }
+
+    .hint {
+      background: rgba(36, 43, 31, 0.06);
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 420px;
+      resize: vertical;
+      border: 1px solid rgba(36, 43, 31, 0.12);
+      border-radius: 24px;
+      padding: 18px;
+      font: 14px/1.6 "SF Mono", "Menlo", "Consolas", monospace;
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.72);
+      outline: none;
+      transition: border-color 140ms ease, box-shadow 140ms ease;
+    }
+
+    textarea:focus {
+      border-color: rgba(13, 122, 81, 0.4);
+      box-shadow: 0 0 0 4px var(--glow);
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    input[type="file"] {
+      display: none;
+    }
+
+    .file-label {
+      display: inline-flex;
+      align-items: center;
+      background: rgba(195, 132, 54, 0.15);
+      color: #714614;
+    }
+
+    .empty-state {
+      display: none;
+    }
+
+    .empty-state.visible {
+      display: block;
+    }
+
+    @media (max-width: 900px) {
+      .view,
+      .view.active {
+        grid-template-columns: 1fr;
+      }
+
+      textarea {
+        min-height: 320px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <section class="hero">
+      <div class="eyebrow">VPN Client</div>
+      <h1>Один конфиг, один экран, одно подключение.</h1>
+      <p class="subtitle">
+        В разделе «Главное» используется уже выбранный профиль. Можно подключиться, отключиться или сразу открыть обращение в поддержку.
+        Вкладка «Конфиг» остается для ручной вставки и проверки JSON.
+      </p>
+      <div class="tabbar">
+        <button id="tabHome" class="tab active" type="button" data-tab="home">Главное</button>
+        <button id="tabConfig" class="tab" type="button" data-tab="config">Конфиг</button>
+      </div>
+    </section>
+
+    <section id="viewHome" class="view active">
+      <article class="panel">
+        <div class="panel-inner">
+          <h2>Главное</h2>
+          <div class="headline">
+            <strong id="mainHeadline">Готово к подключению</strong>
+            <p id="mainLead">Панель ждет запуска. Если preset-конфиг уже загружен, достаточно нажать «Подключиться».</p>
+          </div>
+
+          <div id="presetHint" class="note">
+            Используется заранее загруженный профиль. Для ручной замены откройте вкладку «Конфиг».
+          </div>
+
+          <div id="emptyHint" class="hint empty-state">
+            Предустановленного профиля пока нет. Перейдите во вкладку «Конфиг», вставьте JSON и подключитесь вручную.
+          </div>
+
+          <div class="cta-grid">
+            <button id="homeConnectButton" class="primary" type="button">Подключиться</button>
+            <button id="homeDisconnectButton" class="danger" type="button">Отключиться</button>
+            <button id="supportButton" class="support" type="button">Обратиться в поддержку</button>
+          </div>
+
+          <div class="status-well">
+            <div id="statusBadge" class="status-badge idle">Idle</div>
+            <p id="statusMessage" class="status-message">Вставьте JSON-конфиг, проверьте его и подключитесь.</p>
+          </div>
+        </div>
+      </article>
+
+      <aside class="panel">
+        <div class="panel-inner profile-card">
+          <h2>Профиль</h2>
+          <div class="facts">
+            <div class="fact">
+              <div class="fact-label">Название</div>
+              <div id="profileName" class="fact-value">Нет профиля</div>
+            </div>
+            <div class="fact">
+              <div class="fact-label">Протокол</div>
+              <div id="profileProtocol" class="fact-value">-</div>
+            </div>
+            <div class="fact">
+              <div class="fact-label">Сервер</div>
+              <div id="profileServer" class="fact-value">-</div>
+            </div>
+            <div class="fact">
+              <div class="fact-label">SOCKS5</div>
+              <div id="profileSocks" class="fact-value">127.0.0.1:1080</div>
+            </div>
+            <div class="fact">
+              <div class="fact-label">HTTP</div>
+              <div id="profileHttp" class="fact-value">127.0.0.1:1081</div>
+            </div>
+          </div>
+
+          <div class="note">
+            Пока сессия активна, держите панель открытой. При отключении runtime останавливается, а временные системные настройки восстанавливаются там, где платформа это поддерживает.
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <section id="viewConfig" class="view">
+      <article class="panel">
+        <div class="panel-inner">
+          <h2>Конфиг</h2>
+          <textarea id="configInput" spellcheck="false" placeholder='Вставьте JSON-конфиг, например:
+{
+  "type": "VLESS",
+  "host": "144.31.13.152",
+  "port": "2443",
+  "uuid": "...",
+  "publicKey": "...",
+  "peer": "www.cloudflare.com",
+  "shortId": "..."
+}'></textarea>
+
+          <div class="actions">
+            <button id="validateButton" class="secondary" type="button">Проверить</button>
+            <button id="configConnectButton" class="primary" type="button">Подключить этот конфиг</button>
+            <button id="configDisconnectButton" class="danger" type="button">Отключить</button>
+            <label class="file-label" for="fileInput">Загрузить JSON</label>
+            <input id="fileInput" type="file" accept=".json,application/json">
+          </div>
+        </div>
+      </article>
+
+      <aside class="panel">
+        <div class="panel-inner">
+          <h2>Подсказка</h2>
+          <div class="headline">
+            <strong>Ручной режим</strong>
+            <p>
+              Эта вкладка нужна, если вы хотите временно заменить preset-конфиг, проверить другой профиль или сохранить профиль
+              в local storage браузера.
+            </p>
+          </div>
+          <div class="hint">
+            Для основного сценария используйте «Главное». Там остается только один шаг: нажать «Подключиться».
+          </div>
+        </div>
+      </aside>
+    </section>
+  </main>
+
+  <script>
+    const storageKey = "vpnclient.controlpanel.config";
+    const configInput = document.getElementById("configInput");
+    const fileInput = document.getElementById("fileInput");
+    const validateButton = document.getElementById("validateButton");
+    const configConnectButton = document.getElementById("configConnectButton");
+    const configDisconnectButton = document.getElementById("configDisconnectButton");
+    const homeConnectButton = document.getElementById("homeConnectButton");
+    const homeDisconnectButton = document.getElementById("homeDisconnectButton");
+    const supportButton = document.getElementById("supportButton");
+    const statusBadge = document.getElementById("statusBadge");
+    const statusMessage = document.getElementById("statusMessage");
+    const mainHeadline = document.getElementById("mainHeadline");
+    const mainLead = document.getElementById("mainLead");
+    const presetHint = document.getElementById("presetHint");
+    const emptyHint = document.getElementById("emptyHint");
+    const profileName = document.getElementById("profileName");
+    const profileProtocol = document.getElementById("profileProtocol");
+    const profileServer = document.getElementById("profileServer");
+    const profileSocks = document.getElementById("profileSocks");
+    const profileHttp = document.getElementById("profileHttp");
+    const tabs = document.querySelectorAll(".tab");
+    const views = {
+      home: document.getElementById("viewHome"),
+      config: document.getElementById("viewConfig"),
+    };
+
+    let currentStatus = {
+      state: "idle",
+      message: "",
+      connected: false,
+      has_default_profile: false,
+      support_target: "",
+    };
+
+    configInput.value = localStorage.getItem(storageKey) || "";
+    configInput.addEventListener("input", () => {
+      localStorage.setItem(storageKey, configInput.value);
+    });
+
+    for (const tab of tabs) {
+      tab.addEventListener("click", () => activateTab(tab.dataset.tab));
+    }
+
+    fileInput.addEventListener("change", async (event) => {
+      const file = event.target.files[0];
+      if (!file) {
+        return;
+      }
+      configInput.value = await file.text();
+      localStorage.setItem(storageKey, configInput.value);
+      fileInput.value = "";
+      activateTab("config");
+    });
+
+    validateButton.addEventListener("click", async () => {
+      await withBusy(async () => {
+        const response = await apiPost("/api/validate", { config: configInput.value });
+        renderStatus({
+          ...currentStatus,
+          state: "idle",
+          message: response.message,
+          connected: false,
+          profile: response.profile,
+        });
+      });
+    });
+
+    configConnectButton.addEventListener("click", async () => {
+      await connectCustom();
+    });
+
+    configDisconnectButton.addEventListener("click", async () => {
+      await disconnect();
+    });
+
+    homeConnectButton.addEventListener("click", async () => {
+      if (currentStatus.has_default_profile) {
+        await connectDefault();
+        return;
+      }
+      activateTab("config");
+      renderStatus({
+        ...currentStatus,
+        state: "idle",
+        message: "Предустановленного профиля нет. Вставьте JSON во вкладке «Конфиг».",
+      });
+    });
+
+    homeDisconnectButton.addEventListener("click", async () => {
+      await disconnect();
+    });
+
+    supportButton.addEventListener("click", () => {
+      if (!currentStatus.support_target) {
+        renderStatus({
+          ...currentStatus,
+          state: "error",
+          message: "Support target is not configured.",
+        });
+        return;
+      }
+      window.location.href = currentStatus.support_target;
+    });
+
+    async function connectDefault() {
+      await withBusy(async () => {
+        const response = await apiPost("/api/connect-default", {});
+        renderStatus(response);
+      });
+    }
+
+    async function connectCustom() {
+      await withBusy(async () => {
+        const response = await apiPost("/api/connect", { config: configInput.value });
+        renderStatus(response);
+        activateTab("home");
+      });
+    }
+
+    async function disconnect() {
+      await withBusy(async () => {
+        const response = await apiPost("/api/disconnect", {});
+        renderStatus(response);
+      });
+    }
+
+    async function refreshStatus() {
+      const response = await fetch("/api/status", { cache: "no-store" });
+      const data = await response.json();
+      renderStatus(data);
+    }
+
+    async function apiPost(url, body) {
+      const response = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+
+      const payload = await response.json();
+      if (!response.ok) {
+        throw new Error(payload.error || "Request failed.");
+      }
+      return payload;
+    }
+
+    async function withBusy(run) {
+      setButtons(true);
+      try {
+        await run();
+      } catch (error) {
+        renderStatus({
+          ...currentStatus,
+          state: "error",
+          message: error.message,
+          connected: false,
+        });
+      } finally {
+        setButtons(false);
+      }
+    }
+
+    function setButtons(busy) {
+      validateButton.disabled = busy;
+      configConnectButton.disabled = busy;
+      configDisconnectButton.disabled = busy;
+      homeConnectButton.disabled = busy;
+      homeDisconnectButton.disabled = busy;
+      supportButton.disabled = busy;
+    }
+
+    function activateTab(tabName) {
+      for (const tab of tabs) {
+        tab.classList.toggle("active", tab.dataset.tab === tabName);
+      }
+      for (const [name, view] of Object.entries(views)) {
+        view.classList.toggle("active", name === tabName);
+      }
+    }
+
+    function renderStatus(status) {
+      currentStatus = {
+        ...currentStatus,
+        ...status,
+      };
+
+      const state = currentStatus.state || "idle";
+      statusBadge.textContent = titleCase(state);
+      statusBadge.className = `status-badge ${state}`;
+      statusMessage.textContent = currentStatus.message || "";
+
+      if (currentStatus.connected) {
+        mainHeadline.textContent = "Подключение активно";
+        mainLead.textContent = "Трафик идет через локальный runtime. При отключении настройки системы будут восстановлены.";
+      } else if (currentStatus.has_default_profile) {
+        mainHeadline.textContent = "Готово к подключению";
+        mainLead.textContent = "Используется уже выбранный конфиг. Для запуска достаточно одной кнопки.";
+      } else {
+        mainHeadline.textContent = "Нужен профиль";
+        mainLead.textContent = "Добавьте JSON-конфиг во вкладке «Конфиг», затем вернитесь в «Главное» или подключитесь оттуда.";
+      }
+
+      presetHint.style.display = currentStatus.has_default_profile ? "block" : "none";
+      emptyHint.classList.toggle("visible", !currentStatus.has_default_profile);
+      homeConnectButton.disabled = !currentStatus.has_default_profile;
+      supportButton.disabled = !currentStatus.support_target;
+
+      const profile = currentStatus.profile || {};
+      profileName.textContent = profile.name || "Нет профиля";
+      profileProtocol.textContent = profile.protocol || "-";
+      profileServer.textContent = profile.server || "-";
+      profileSocks.textContent = profile.socks_address || "127.0.0.1:1080";
+      profileHttp.textContent = profile.http_address || "127.0.0.1:1081";
+    }
+
+    function titleCase(value) {
+      if (!value) {
+        return "";
+      }
+      return value.charAt(0).toUpperCase() + value.slice(1);
+    }
+
+    refreshStatus().catch((error) => {
+      renderStatus({
+        state: "error",
+        message: error.message,
+        connected: false,
+        has_default_profile: false,
+      });
+    });
+  </script>
+</body>
+</html>
