@@ -28,13 +28,11 @@ type errorResponse struct {
 	Error string `json:"error"`
 }
 
-// ServerOptions configures the control panel behavior.
 type ServerOptions struct {
 	DefaultProfile *config.Profile
 	SupportURL     string
 }
 
-// ProfileSummary is the UI-safe profile view returned by the control panel API.
 type ProfileSummary struct {
 	Name         string `json:"name"`
 	Protocol     string `json:"protocol"`
@@ -43,7 +41,6 @@ type ProfileSummary struct {
 	HTTPAddress  string `json:"http_address"`
 }
 
-// SessionStatus describes the current UI session state.
 type SessionStatus struct {
 	State             string          `json:"state"`
 	Message           string          `json:"message"`
@@ -53,13 +50,11 @@ type SessionStatus struct {
 	SupportTarget     string          `json:"support_target,omitempty"`
 }
 
-// ValidateResponse describes a successfully validated pasted profile.
 type ValidateResponse struct {
 	Message string         `json:"message"`
 	Profile ProfileSummary `json:"profile"`
 }
 
-// Server serves the local control panel UI and API.
 type Server struct {
 	logger         *slog.Logger
 	service        vpnService
@@ -71,12 +66,10 @@ type Server struct {
 	status SessionStatus
 }
 
-// NewServer creates a control panel server with default options.
 func NewServer(logger *slog.Logger, service vpnService) *Server {
 	return NewServerWithOptions(logger, service, ServerOptions{})
 }
 
-// NewServerWithOptions creates a control panel server with explicit options.
 func NewServerWithOptions(
 	logger *slog.Logger,
 	service vpnService,
@@ -98,12 +91,10 @@ func NewServerWithOptions(
 	return server
 }
 
-// Handler returns the HTTP handler for the control panel.
 func (s *Server) Handler() http.Handler {
 	return s.mux
 }
 
-// Shutdown disconnects any active session during UI shutdown.
 func (s *Server) Shutdown(ctx context.Context) error {
 	s.mu.RLock()
 	connected := s.status.Connected

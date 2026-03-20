@@ -8,12 +8,10 @@ import (
 	"vpnclient/internal/config"
 )
 
-// XrayAdapter renders Xray and Xray REALITY profiles.
 type XrayAdapter struct {
 	logger *slog.Logger
 }
 
-// BuildPlan converts the normalized profile into an Xray launch plan.
 func (a *XrayAdapter) BuildPlan(profile config.Profile) (Plan, error) {
 	profile = profile.WithDefaults()
 	if err := profile.Validate(); err != nil {

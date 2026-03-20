@@ -33,14 +33,14 @@ int SetErrorMessage(const std::string& text, VpnPlatformBuffer* out_error) {
   return SetBuffer(text, out_error);
 }
 
-}  // namespace
+}
 
 int PlatformGetCapabilitiesJson(VpnPlatformBuffer* out_buffer);
 int PlatformApplySystemProxyJson(const char* request_json,
                                  VpnPlatformBuffer* out_error);
 int PlatformClearSystemProxy(VpnPlatformBuffer* out_error);
 
-}  // namespace vpn_platform_bridge
+}
 
 extern "C" int VpnPlatformGetCapabilitiesJson(VpnPlatformBuffer* out_buffer) {
   return vpn_platform_bridge::PlatformGetCapabilitiesJson(out_buffer);

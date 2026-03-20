@@ -7,7 +7,6 @@ import (
 	"runtime"
 )
 
-// OpenBrowser opens the given URL in the default browser.
 func OpenBrowser(url string) error {
 	return openBrowser(context.Background(), url)
 }

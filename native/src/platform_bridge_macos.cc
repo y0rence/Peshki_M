@@ -45,14 +45,13 @@ int SetJsonMessage(const std::string& text, VpnPlatformBuffer* out_buffer) {
   return 0;
 }
 
-}  // namespace
+}
 
 int PlatformGetCapabilitiesJson(VpnPlatformBuffer* out_buffer) {
   const std::string json =
       "{\"platform\":\"macos\",\"os_version\":\"" + GetOSVersion() +
       "\",\"supports_system_proxy\":false,\"supports_tun\":false,"
-      "\"notes\":\"TODO: implement NetworkExtension and SystemConfiguration "
-      "bridge.\"}";
+      "\"notes\":\"System proxy integration is unavailable in this build.\"}";
   return SetJsonMessage(json, out_buffer);
 }
 
@@ -60,16 +59,14 @@ int PlatformApplySystemProxyJson(const char* request_json,
                                  VpnPlatformBuffer* out_error) {
   (void)request_json;
   return SetJsonMessage(
-      "TODO: macOS system proxy application is not implemented yet. "
-      "Wire this to SystemConfiguration or NetworkExtension.",
+      "macOS system proxy integration is unavailable in this build.",
       out_error);
 }
 
 int PlatformClearSystemProxy(VpnPlatformBuffer* out_error) {
   return SetJsonMessage(
-      "TODO: macOS system proxy cleanup is not implemented yet. "
-      "Wire this to SystemConfiguration or NetworkExtension.",
+      "macOS system proxy integration is unavailable in this build.",
       out_error);
 }
 
-}  // namespace vpn_platform_bridge
+}

@@ -7,12 +7,10 @@ import (
 	"vpnclient/internal/config"
 )
 
-// OutlineAdapter renders Outline as a Shadowsocks outbound for Xray.
 type OutlineAdapter struct {
 	logger *slog.Logger
 }
 
-// BuildPlan converts the normalized Outline profile into an Xray launch plan.
 func (a *OutlineAdapter) BuildPlan(profile config.Profile) (Plan, error) {
 	profile = profile.WithDefaults()
 	if err := profile.Validate(); err != nil {

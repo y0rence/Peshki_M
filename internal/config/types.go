@@ -2,7 +2,6 @@ package config
 
 import "fmt"
 
-// Protocol identifies the external config family and runtime behavior.
 type Protocol string
 
 const (
@@ -14,7 +13,6 @@ const (
 	defaultHTTPAddress           = "127.0.0.1:1081"
 )
 
-// Profile is the normalized internal configuration model.
 type Profile struct {
 	Name        string            `json:"name"`
 	Protocol    Protocol          `json:"protocol"`
@@ -26,13 +24,11 @@ type Profile struct {
 	Metadata    map[string]string `json:"metadata,omitempty"`
 }
 
-// Server identifies the remote endpoint.
 type Server struct {
 	Host string `json:"host"`
 	Port int    `json:"port"`
 }
 
-// Credentials contains protocol-specific authentication material.
 type Credentials struct {
 	Method              string `json:"method,omitempty"`
 	Password            string `json:"password,omitempty"`
@@ -42,7 +38,6 @@ type Credentials struct {
 	ObfuscationPassword string `json:"obfuscation_password,omitempty"`
 }
 
-// Transport holds transport-layer options shared across protocol families.
 type Transport struct {
 	Network string     `json:"network,omitempty"`
 	TLS     *TLS       `json:"tls,omitempty"`
@@ -51,7 +46,6 @@ type Transport struct {
 	QUIC    *QUIC      `json:"quic,omitempty"`
 }
 
-// TLS contains TLS-related settings.
 type TLS struct {
 	Enabled            bool     `json:"enabled"`
 	ServerName         string   `json:"server_name,omitempty"`
@@ -59,7 +53,6 @@ type TLS struct {
 	InsecureSkipVerify bool     `json:"insecure_skip_verify,omitempty"`
 }
 
-// Reality contains Xray REALITY client options.
 type Reality struct {
 	Enabled     bool   `json:"enabled"`
 	ServerName  string `json:"server_name,omitempty"`
@@ -69,25 +62,21 @@ type Reality struct {
 	SpiderX     string `json:"spider_x,omitempty"`
 }
 
-// WebSocket contains WebSocket transport options.
 type WebSocket struct {
 	Path    string            `json:"path,omitempty"`
 	Headers map[string]string `json:"headers,omitempty"`
 }
 
-// QUIC contains Hysteria-specific QUIC options.
 type QUIC struct {
 	UpMbps   int `json:"up_mbps,omitempty"`
 	DownMbps int `json:"down_mbps,omitempty"`
 }
 
-// LocalProxy describes local proxy listeners exposed by the runtime.
 type LocalProxy struct {
 	SOCKSAddress string `json:"socks_address,omitempty"`
 	HTTPAddress  string `json:"http_address,omitempty"`
 }
 
-// Engine defines the runtime executable and process settings.
 type Engine struct {
 	Binary      string            `json:"binary"`
 	WorkingDir  string            `json:"working_dir,omitempty"`
@@ -95,7 +84,6 @@ type Engine struct {
 	Environment map[string]string `json:"environment,omitempty"`
 }
 
-// WithDefaults fills pragmatic defaults while keeping the public model stable.
 func (p Profile) WithDefaults() Profile {
 	if p.Name == "" && p.Server.Host != "" && p.Server.Port > 0 && p.Protocol != "" {
 		p.Name = fmt.Sprintf("%s-%s-%d", p.Protocol, p.Server.Host, p.Server.Port)

@@ -82,7 +82,6 @@ type importedVLESSInput struct {
 	XTLS      int    `json:"xtls"`
 }
 
-// LoadProfile reads a JSON config file and normalizes it into the internal model.
 func LoadProfile(path string) (Profile, error) {
 	data, err := os.ReadFile(path)
 	if err != nil {
@@ -97,7 +96,6 @@ func LoadProfile(path string) (Profile, error) {
 	return resolveRelativePaths(profile, filepath.Dir(path)), nil
 }
 
-// NormalizeProfile converts a protocol-family JSON config into the internal model.
 func NormalizeProfile(data []byte) (Profile, error) {
 	if len(bytes.TrimSpace(data)) == 0 {
 		return Profile{}, fmt.Errorf("config is empty")
@@ -366,7 +364,6 @@ func splitCSV(value string) []string {
 }
 
 func inferImportedVLESSFlow(xtls int) string {
-	// Many exported VLESS profiles encode Vision as a numeric xtls flag.
 	if xtls > 0 {
 		return "xtls-rprx-vision"
 	}

@@ -105,7 +105,7 @@ NSArray<NSString*>* ConsumeCompleteLines(NSMutableData* buffer) {
   return lines;
 }
 
-}  // namespace
+}
 
 typedef NS_ENUM(NSInteger, VPNButtonRole) {
   kVPNButtonRolePrimary = 1,

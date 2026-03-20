@@ -10,7 +10,6 @@ import (
 
 const configPathPlaceholder = "__VPNCLIENT_CONFIG_PATH__"
 
-// Plan is the fully rendered runtime launch plan.
 type Plan struct {
 	Protocol       config.Protocol
 	Binary         string
@@ -22,23 +21,19 @@ type Plan struct {
 	ConfigData     []byte
 }
 
-// Adapter converts a normalized profile into a runtime launch plan.
 type Adapter interface {
 	BuildPlan(config.Profile) (Plan, error)
 }
 
-// Process represents a running protocol runtime.
 type Process interface {
 	Stop(context.Context) error
 	Wait() error
 }
 
-// Starter launches runtime plans.
 type Starter interface {
 	Start(context.Context, Plan) (Process, error)
 }
 
-// AdapterFor selects the correct runtime adapter for the profile protocol.
 func AdapterFor(protocol config.Protocol, logger *slog.Logger) (Adapter, error) {
 	switch protocol {
 	case config.ProtocolOutline:

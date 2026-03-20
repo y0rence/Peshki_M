@@ -6,7 +6,6 @@ import (
 	"strings"
 )
 
-// Validate checks whether the normalized profile is actionable.
 func (p Profile) Validate() error {
 	if p.Protocol == "" {
 		return fmt.Errorf("protocol is required")

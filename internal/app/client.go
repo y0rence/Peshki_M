@@ -12,7 +12,6 @@ import (
 	"vpnclient/internal/runtime"
 )
 
-// Client coordinates config validation, native prep, and runtime launch.
 type Client struct {
 	logger     *slog.Logger
 	controller platform.Controller
@@ -23,7 +22,6 @@ type Client struct {
 	profile config.Profile
 }
 
-// NewClient creates a client with explicit runtime and platform dependencies.
 func NewClient(
 	logger *slog.Logger,
 	controller platform.Controller,
@@ -40,7 +38,6 @@ func NewClient(
 	}
 }
 
-// Connect validates the profile, prepares the platform, and starts the runtime.
 func (c *Client) Connect(ctx context.Context, profile config.Profile) error {
 	c.mu.Lock()
 	if c.process != nil {
@@ -90,7 +87,6 @@ func (c *Client) Connect(ctx context.Context, profile config.Profile) error {
 	return nil
 }
 
-// Disconnect stops the runtime and releases any platform state.
 func (c *Client) Disconnect(ctx context.Context) error {
 	c.mu.Lock()
 	process := c.process

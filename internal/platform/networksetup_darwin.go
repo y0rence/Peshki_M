@@ -59,7 +59,6 @@ func (e *conflictingTunnelError) Error() string {
 	)
 }
 
-// NetworkSetupController manages macOS system proxy settings through networksetup.
 type NetworkSetupController struct {
 	logger    *slog.Logger
 	run       commandRunner
@@ -67,7 +66,6 @@ type NetworkSetupController struct {
 	snapshots []serviceSnapshot
 }
 
-// NewNetworkSetupController creates a macOS controller that snapshots and restores proxies.
 func NewNetworkSetupController(logger *slog.Logger) *NetworkSetupController {
 	if logger == nil {
 		logger = slog.Default()
@@ -79,7 +77,6 @@ func NewNetworkSetupController(logger *slog.Logger) *NetworkSetupController {
 	}
 }
 
-// Prepare snapshots existing proxy configuration and applies the local runtime proxies.
 func (c *NetworkSetupController) Prepare(ctx context.Context, profile config.Profile) error {
 	if err := c.prepareSystemProxy(ctx, profile); err != nil {
 		var conflictErr *conflictingTunnelError
@@ -164,7 +161,6 @@ func (c *NetworkSetupController) prepareSystemProxy(
 	return nil
 }
 
-// Cleanup restores the original macOS proxy settings.
 func (c *NetworkSetupController) Cleanup(ctx context.Context, _ config.Profile) error {
 	c.mu.Lock()
 	snapshots := append([]serviceSnapshot(nil), c.snapshots...)

@@ -23,7 +23,6 @@ const (
 	outputTailLimit     = 20
 )
 
-// Launcher starts external protocol runtimes.
 type Launcher struct {
 	logger                        *slog.Logger
 	newCommand                    func(context.Context, string, ...string) *exec.Cmd
@@ -31,7 +30,6 @@ type Launcher struct {
 	addressesAreReachable         func([]string) (bool, error)
 }
 
-// NewLauncher creates a process launcher backed by os/exec.
 func NewLauncher(logger *slog.Logger) *Launcher {
 	if logger == nil {
 		logger = slog.Default()
@@ -44,7 +42,6 @@ func NewLauncher(logger *slog.Logger) *Launcher {
 	}
 }
 
-// Start launches the runtime and returns a handle for later shutdown.
 func (l *Launcher) Start(ctx context.Context, plan Plan) (Process, error) {
 	if err := l.ensureReadyAddressesAvailable(plan.ReadyAddresses); err != nil {
 		return nil, err
@@ -106,7 +103,6 @@ func (l *Launcher) Start(ctx context.Context, plan Plan) (Process, error) {
 	return handle, nil
 }
 
-// Handle manages a running runtime process.
 type Handle struct {
 	logger                *slog.Logger
 	command               *exec.Cmd
@@ -120,13 +116,11 @@ type Handle struct {
 	addressesAreReachable func([]string) (bool, error)
 }
 
-// Wait blocks until the runtime exits.
 func (h *Handle) Wait() error {
 	<-h.done
 	return h.waitErr
 }
 
-// Stop attempts a graceful shutdown and escalates to kill on timeout.
 func (h *Handle) Stop(ctx context.Context) error {
 	h.stopRequested.Store(true)
 

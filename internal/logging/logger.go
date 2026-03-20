@@ -7,12 +7,10 @@ import (
 	"strings"
 )
 
-// Logger is a thin wrapper that keeps the logging dependency narrow.
 type Logger struct {
 	inner *slog.Logger
 }
 
-// NewLogger creates a text logger with an explicit log level.
 func NewLogger(level string) (*Logger, error) {
 	parsedLevel, err := parseLevel(level)
 	if err != nil {
@@ -28,7 +26,6 @@ func NewLogger(level string) (*Logger, error) {
 	}, nil
 }
 
-// Slog exposes the underlying logger for packages that already depend on slog.
 func (l *Logger) Slog() *slog.Logger {
 	if l == nil {
 		return slog.Default()
@@ -36,12 +33,10 @@ func (l *Logger) Slog() *slog.Logger {
 	return l.inner
 }
 
-// Info forwards structured info logs to the underlying slog.Logger.
 func (l *Logger) Info(message string, args ...any) {
 	l.Slog().Info(message, args...)
 }
 
-// Warn forwards structured warning logs to the underlying slog.Logger.
 func (l *Logger) Warn(message string, args ...any) {
 	l.Slog().Warn(message, args...)
 }

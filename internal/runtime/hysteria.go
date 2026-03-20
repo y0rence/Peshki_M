@@ -9,12 +9,10 @@ import (
 	"vpnclient/internal/config"
 )
 
-// HysteriaAdapter renders a Hysteria 2 client configuration.
 type HysteriaAdapter struct {
 	logger *slog.Logger
 }
 
-// BuildPlan converts the normalized Hysteria profile into a launch plan.
 func (a *HysteriaAdapter) BuildPlan(profile config.Profile) (Plan, error) {
 	profile = profile.WithDefaults()
 	if err := profile.Validate(); err != nil {
