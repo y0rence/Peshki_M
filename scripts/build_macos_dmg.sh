@@ -3,12 +3,19 @@ set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 APP_NAME="VPNClient"
-APP_VERSION="1.0.0"
+APP_VERSION="${APP_VERSION:-1.0.0}"
+APP_BUILD="${APP_BUILD:-1}"
+DMG_SUFFIX="${DMG_SUFFIX:-}"
 APP_DIR="${ROOT_DIR}/build/${APP_NAME}.app"
 DMG_ROOT="${ROOT_DIR}/build/dmg-root"
-DMG_PATH="${ROOT_DIR}/build/${APP_NAME}-${APP_VERSION}.dmg"
+DMG_NAME="${APP_NAME}-${APP_VERSION}"
+if [[ -n "${DMG_SUFFIX}" ]]; then
+  DMG_NAME="${DMG_NAME}-${DMG_SUFFIX}"
+fi
+DMG_PATH="${ROOT_DIR}/build/${DMG_NAME}.dmg"
 
-"${ROOT_DIR}/scripts/build_macos_app.sh"
+APP_VERSION="${APP_VERSION}" APP_BUILD="${APP_BUILD}" \
+  "${ROOT_DIR}/scripts/build_macos_app.sh"
 
 rm -rf "${DMG_ROOT}"
 mkdir -p "${DMG_ROOT}"

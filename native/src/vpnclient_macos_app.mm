@@ -67,6 +67,44 @@ std::optional<std::string> ExtractControlPanelURL(NSString* line) {
   return ToStdString(url);
 }
 
+NSArray<NSString*>* ConsumeCompleteLines(NSMutableData* buffer) {
+  NSMutableArray<NSString*>* lines = [NSMutableArray array];
+  if (buffer.length == 0) {
+    return lines;
+  }
+
+  const char* bytes = reinterpret_cast<const char*>(buffer.bytes);
+  NSUInteger consumed = 0;
+  NSUInteger line_start = 0;
+
+  for (NSUInteger i = 0; i < buffer.length; ++i) {
+    if (bytes[i] != '\n') {
+      continue;
+    }
+
+    NSUInteger line_length = i - line_start;
+    while (line_length > 0 && bytes[line_start + line_length - 1] == '\r') {
+      --line_length;
+    }
+
+    NSString* line = [[NSString alloc] initWithBytes:bytes + line_start
+                                              length:line_length
+                                            encoding:NSUTF8StringEncoding];
+    if (line != nil && line.length > 0) {
+      [lines addObject:line];
+    }
+
+    line_start = i + 1;
+    consumed = i + 1;
+  }
+
+  if (consumed > 0) {
+    [buffer replaceBytesInRange:NSMakeRange(0, consumed) withBytes:nullptr length:0];
+  }
+
+  return lines;
+}
+
 }  // namespace
 
 typedef NS_ENUM(NSInteger, VPNButtonRole) {
@@ -96,7 +134,9 @@ typedef NS_ENUM(NSInteger, VPNButtonRole) {
   NSButton* stay_in_app_button_;
 
   NSString* config_path_;
+  NSString* bundled_config_path_;
   NSString* support_url_;
+  NSString* backend_path_;
 
   LaunchDestination pending_destination_;
   BOOL backend_starting_;
@@ -106,21 +146,28 @@ typedef NS_ENUM(NSInteger, VPNButtonRole) {
   NSPipe* backend_pipe_;
   NSMutableData* backend_buffer_;
   NSURL* control_panel_url_;
+  NSURL* embedded_control_panel_url_;
+  NSMutableParagraphStyle* centered_button_paragraph_;
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification*)notification {
   (void)notification;
 
   AppOptions options = ParseArguments(NSProcessInfo.processInfo.arguments);
+  bundled_config_path_ = [self resolveBundledConfigPath];
   config_path_ = ToNSString(options.config_path);
   if (config_path_.length == 0) {
-    config_path_ = [self resolveBundledConfigPath];
+    config_path_ = bundled_config_path_;
   }
   support_url_ = ToNSString(options.support_url);
+  backend_path_ = [self resolveBackendPath];
   pending_destination_ = LaunchDestination::kEmbedded;
   backend_starting_ = NO;
   application_quitting_ = NO;
   backend_buffer_ = [[NSMutableData alloc] init];
+  embedded_control_panel_url_ = nil;
+  centered_button_paragraph_ = [[NSMutableParagraphStyle alloc] init];
+  centered_button_paragraph_.alignment = NSTextAlignmentCenter;
 
   [self buildWindow];
   [self renderChooserState];
@@ -297,13 +344,10 @@ typedef NS_ENUM(NSInteger, VPNButtonRole) {
       break;
   }
 
-  NSMutableParagraphStyle* paragraph = [[NSMutableParagraphStyle alloc] init];
-  paragraph.alignment = NSTextAlignmentCenter;
-
   NSDictionary* attributes = @{
     NSForegroundColorAttributeName: title_color,
     NSFontAttributeName: [NSFont systemFontOfSize:14 weight:NSFontWeightSemibold],
-    NSParagraphStyleAttributeName: paragraph,
+    NSParagraphStyleAttributeName: centered_button_paragraph_,
   };
   button.attributedTitle = [[NSAttributedString alloc] initWithString:button.title
                                                            attributes:attributes];
@@ -316,8 +360,7 @@ typedef NS_ENUM(NSInteger, VPNButtonRole) {
 - (void)renderChooserState {
   NSString* config_message = @"Конфиг не выбран. Укажите JSON-файл перед запуском.";
   if (config_path_.length > 0) {
-    NSString* bundled_path = [self resolveBundledConfigPath];
-    if (bundled_path.length > 0 && [config_path_ isEqualToString:bundled_path]) {
+    if (bundled_config_path_.length > 0 && [config_path_ isEqualToString:bundled_config_path_]) {
       config_message = @"Встроенный конфиг: PeshkiM.json";
     } else {
       config_message = [NSString stringWithFormat:@"Текущий конфиг: %@", config_path_];
@@ -368,8 +411,10 @@ typedef NS_ENUM(NSInteger, VPNButtonRole) {
     return;
   }
 
-  NSString* backend_path = [self resolveBackendPath];
-  if (backend_path.length == 0) {
+  if (backend_path_.length == 0) {
+    backend_path_ = [self resolveBackendPath];
+  }
+  if (backend_path_.length == 0) {
     [self presentAlertWithTitle:@"Не найден backend"
                         message:@"Не удалось найти vpnclient-ui внутри bundle приложения."];
     return;
@@ -380,7 +425,7 @@ typedef NS_ENUM(NSInteger, VPNButtonRole) {
   [self setStatus:@"Запускаю локальную control panel..."];
 
   backend_task_ = [[NSTask alloc] init];
-  backend_task_.launchPath = backend_path;
+  backend_task_.launchPath = backend_path_;
 
   NSMutableArray<NSString*>* arguments = [NSMutableArray arrayWithArray:@[
     @"-listen", @"127.0.0.1:0",
@@ -439,22 +484,12 @@ typedef NS_ENUM(NSInteger, VPNButtonRole) {
 - (void)handleBackendOutputData:(NSData*)data {
   [backend_buffer_ appendData:data];
 
-  NSString* text = [[NSString alloc] initWithData:backend_buffer_
-                                         encoding:NSUTF8StringEncoding];
-  if (text == nil) {
-    return;
-  }
-
-  NSArray<NSString*>* lines = [text componentsSeparatedByString:@"\n"];
+  NSArray<NSString*>* lines = ConsumeCompleteLines(backend_buffer_);
   if (lines.count == 0) {
     return;
   }
 
-  NSString* remainder = [lines lastObject];
-  [backend_buffer_ setData:[remainder dataUsingEncoding:NSUTF8StringEncoding]];
-
-  for (NSUInteger i = 0; i + 1 < lines.count; ++i) {
-    NSString* line = lines[i];
+  for (NSString* line in lines) {
     std::optional<std::string> url = ExtractControlPanelURL(line);
     if (!url.has_value()) {
       continue;
@@ -479,6 +514,7 @@ typedef NS_ENUM(NSInteger, VPNButtonRole) {
   backend_task_ = nil;
   backend_pipe_ = nil;
   backend_buffer_ = [[NSMutableData alloc] init];
+  embedded_control_panel_url_ = nil;
 
   if (application_quitting_) {
     control_panel_url_ = nil;
@@ -516,7 +552,15 @@ typedef NS_ENUM(NSInteger, VPNButtonRole) {
     web_view_.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
   }
 
-  window_.contentView = web_view_;
+  if (window_.contentView != web_view_) {
+    window_.contentView = web_view_;
+  }
+  if (embedded_control_panel_url_ != nil &&
+      [embedded_control_panel_url_ isEqual:url]) {
+    return;
+  }
+
+  embedded_control_panel_url_ = url;
   [web_view_ loadRequest:[NSURLRequest requestWithURL:url]];
 }
 

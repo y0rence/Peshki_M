@@ -67,7 +67,7 @@ type Server struct {
 	defaultProfile *config.Profile
 	supportURL     string
 
-	mu     sync.Mutex
+	mu     sync.RWMutex
 	status SessionStatus
 }
 
@@ -105,9 +105,9 @@ func (s *Server) Handler() http.Handler {
 
 // Shutdown disconnects any active session during UI shutdown.
 func (s *Server) Shutdown(ctx context.Context) error {
-	s.mu.Lock()
+	s.mu.RLock()
 	connected := s.status.Connected
-	s.mu.Unlock()
+	s.mu.RUnlock()
 
 	if !connected {
 		return nil
@@ -148,9 +148,9 @@ func (s *Server) handleIndex(w http.ResponseWriter, _ *http.Request) {
 }
 
 func (s *Server) handleStatus(w http.ResponseWriter, _ *http.Request) {
-	s.mu.Lock()
+	s.mu.RLock()
 	status := cloneStatus(s.status)
-	s.mu.Unlock()
+	s.mu.RUnlock()
 
 	writeJSON(w, http.StatusOK, status)
 }
