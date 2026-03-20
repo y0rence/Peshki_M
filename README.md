@@ -19,6 +19,10 @@ PeshkiM VPN Client — это desktop-приложение для macOS с ло�
 
 ![Control panel status](docs/screenshots/control-panel-status.png)
 
+### Control panel: вкладка конфиг
+
+![Control panel config](docs/screenshots/control-panel-config.png)
+
 ## Технологический стек
 
 - Go 1.26
