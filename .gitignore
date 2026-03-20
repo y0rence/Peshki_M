@@ -1,9 +1,34 @@
 .DS_Store
+Thumbs.db
+
+# Environment files
+.env
+.env.local
+.env.*
 
 # Build outputs and temporary files
 bin/
 build/
 tmp/
+dist/
+out/
+*.app
+*.dmg
+*.pkg
+*.zip
+*.tar.gz
+*.log
 
 # Local runtime artifacts
 hysteria-darwin-arm64
+
+# Dependencies and caches
+vendor/
+node_modules/
+__pycache__/
+.pytest_cache/
+.mypy_cache/
+
+# IDE and editor settings
+.idea/
+.vscode/

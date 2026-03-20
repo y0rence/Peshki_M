@@ -1,0 +1,124 @@
+<svg width="1600" height="980" viewBox="0 0 1600 980" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="page" x1="120" y1="60" x2="1520" y2="920" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#EEE6D8"/>
+      <stop offset="0.55" stop-color="#F6F1E7"/>
+      <stop offset="1" stop-color="#ECE3D6"/>
+    </linearGradient>
+    <filter id="panelShadow" x="120" y="80" width="1360" height="860" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="30" stdDeviation="34" flood-color="#2A3022" flood-opacity="0.14"/>
+    </filter>
+  </defs>
+
+  <rect width="1600" height="980" fill="url(#page)"/>
+  <circle cx="242" cy="144" r="172" fill="#0D7A51" fill-opacity="0.10"/>
+  <circle cx="1374" cy="852" r="212" fill="#C28035" fill-opacity="0.10"/>
+
+  <g filter="url(#panelShadow)">
+    <rect x="170" y="118" width="1260" height="232" rx="30" fill="#FFFCF6" fill-opacity="0.92" stroke="#242B1F" stroke-opacity="0.10"/>
+    <rect x="170" y="382" width="840" height="416" rx="30" fill="#FFFCF6" fill-opacity="0.92" stroke="#242B1F" stroke-opacity="0.10"/>
+    <rect x="1034" y="382" width="396" height="416" rx="30" fill="#FFFCF6" fill-opacity="0.92" stroke="#242B1F" stroke-opacity="0.10"/>
+  </g>
+
+  <text x="230" y="176" fill="#0D7A51" font-family="Avenir Next, Helvetica Neue, Arial, sans-serif" font-size="18" font-weight="700" letter-spacing="4">
+    VPN CLIENT
+  </text>
+  <text x="230" y="252" fill="#1F241C" font-family="Avenir Next, Helvetica Neue, Arial, sans-serif" font-size="60" font-weight="800">
+    Один конфиг, один экран,
+  </text>
+  <text x="230" y="314" fill="#1F241C" font-family="Avenir Next, Helvetica Neue, Arial, sans-serif" font-size="60" font-weight="800">
+    одно подключение.
+  </text>
+  <text x="230" y="212" fill="#5E6655" font-family="Avenir Next, Helvetica Neue, Arial, sans-serif" font-size="0">.</text>
+  <text x="230" y="286" fill="#5E6655" font-family="Avenir Next, Helvetica Neue, Arial, sans-serif" font-size="24" font-weight="500">
+    В разделе «Главное» используется уже выбранный профиль.
+  </text>
+  <text x="230" y="320" fill="#5E6655" font-family="Avenir Next, Helvetica Neue, Arial, sans-serif" font-size="24" font-weight="500">
+    Можно подключиться, отключиться или сразу открыть поддержку.
+  </text>
+
+  <rect x="230" y="264" width="152" height="0" rx="0" fill="#000"/>
+  <rect x="230" y="276" width="142" height="44" rx="22" fill="#0D7A51"/>
+  <text x="301" y="304" text-anchor="middle" fill="#FFFBF4" font-family="Avenir Next, Helvetica Neue, Arial, sans-serif" font-size="18" font-weight="700">
+    Главное
+  </text>
+  <rect x="390" y="276" width="132" height="44" rx="22" fill="#242B1F" fill-opacity="0.08"/>
+  <text x="456" y="304" text-anchor="middle" fill="#1F241C" font-family="Avenir Next, Helvetica Neue, Arial, sans-serif" font-size="18" font-weight="700">
+    Конфиг
+  </text>
+
+  <text x="226" y="440" fill="#5E6655" font-family="Avenir Next, Helvetica Neue, Arial, sans-serif" font-size="18" font-weight="700" letter-spacing="3">
+    ГЛАВНОЕ
+  </text>
+  <text x="226" y="510" fill="#1F241C" font-family="Avenir Next, Helvetica Neue, Arial, sans-serif" font-size="44" font-weight="800">
+    Готово к подключению
+  </text>
+  <text x="226" y="552" fill="#5E6655" font-family="Avenir Next, Helvetica Neue, Arial, sans-serif" font-size="23" font-weight="500">
+    Панель ждет запуска. Если preset-конфиг уже загружен,
+  </text>
+  <text x="226" y="584" fill="#5E6655" font-family="Avenir Next, Helvetica Neue, Arial, sans-serif" font-size="23" font-weight="500">
+    достаточно нажать «Подключиться».
+  </text>
+
+  <rect x="226" y="610" width="736" height="66" rx="18" fill="#F4EFE4"/>
+  <text x="258" y="651" fill="#5E6655" font-family="Avenir Next, Helvetica Neue, Arial, sans-serif" font-size="21" font-weight="500">
+    Используется заранее загруженный профиль. Для ручной замены откройте вкладку «Конфиг».
+  </text>
+
+  <rect x="226" y="702" width="214" height="54" rx="27" fill="#0D7A51"/>
+  <text x="333" y="736" text-anchor="middle" fill="#FFFDF8" font-family="Avenir Next, Helvetica Neue, Arial, sans-serif" font-size="20" font-weight="700">
+    Подключиться
+  </text>
+  <rect x="456" y="702" width="198" height="54" rx="27" fill="#A43F30"/>
+  <text x="555" y="736" text-anchor="middle" fill="#FFF7F5" font-family="Avenir Next, Helvetica Neue, Arial, sans-serif" font-size="20" font-weight="700">
+    Отключиться
+  </text>
+  <rect x="672" y="702" width="290" height="54" rx="27" fill="#F0DEBE"/>
+  <text x="817" y="736" text-anchor="middle" fill="#714614" font-family="Avenir Next, Helvetica Neue, Arial, sans-serif" font-size="20" font-weight="700">
+    Обратиться в поддержку
+  </text>
+
+  <rect x="226" y="778" width="736" height="148" rx="24" fill="#E7F2EC" fill-opacity="0.82" stroke="#0D7A51" stroke-opacity="0.10"/>
+  <rect x="252" y="804" width="108" height="42" rx="21" fill="#E0ECE5"/>
+  <text x="306" y="831" text-anchor="middle" fill="#1F241C" font-family="Avenir Next, Helvetica Neue, Arial, sans-serif" font-size="18" font-weight="700">
+    Idle
+  </text>
+  <text x="252" y="878" fill="#5E6655" font-family="Avenir Next, Helvetica Neue, Arial, sans-serif" font-size="23" font-weight="500">
+    Вставьте JSON-конфиг, проверьте его и подключитесь.
+  </text>
+
+  <text x="1092" y="440" fill="#5E6655" font-family="Avenir Next, Helvetica Neue, Arial, sans-serif" font-size="18" font-weight="700" letter-spacing="3">
+    ПРОФИЛЬ
+  </text>
+  <text x="1092" y="518" fill="#5E6655" font-family="Avenir Next, Helvetica Neue, Arial, sans-serif" font-size="16" font-weight="700" letter-spacing="2">
+    НАЗВАНИЕ
+  </text>
+  <text x="1092" y="550" fill="#1F241C" font-family="Avenir Next, Helvetica Neue, Arial, sans-serif" font-size="30" font-weight="700">
+    Нет профиля
+  </text>
+  <line x1="1092" y1="584" x2="1372" y2="584" stroke="#242B1F" stroke-opacity="0.08"/>
+  <text x="1092" y="624" fill="#5E6655" font-family="Avenir Next, Helvetica Neue, Arial, sans-serif" font-size="16" font-weight="700" letter-spacing="2">
+    ПРОТОКОЛ
+  </text>
+  <text x="1092" y="656" fill="#1F241C" font-family="Avenir Next, Helvetica Neue, Arial, sans-serif" font-size="28" font-weight="700">
+    VLESS
+  </text>
+  <line x1="1092" y1="690" x2="1372" y2="690" stroke="#242B1F" stroke-opacity="0.08"/>
+  <text x="1092" y="730" fill="#5E6655" font-family="Avenir Next, Helvetica Neue, Arial, sans-serif" font-size="16" font-weight="700" letter-spacing="2">
+    SOCKS5
+  </text>
+  <text x="1092" y="762" fill="#1F241C" font-family="Avenir Next, Helvetica Neue, Arial, sans-serif" font-size="28" font-weight="700">
+    127.0.0.1:1080
+  </text>
+  <line x1="1092" y1="796" x2="1372" y2="796" stroke="#242B1F" stroke-opacity="0.08"/>
+  <text x="1092" y="836" fill="#5E6655" font-family="Avenir Next, Helvetica Neue, Arial, sans-serif" font-size="16" font-weight="700" letter-spacing="2">
+    HTTP
+  </text>
+  <text x="1092" y="868" fill="#1F241C" font-family="Avenir Next, Helvetica Neue, Arial, sans-serif" font-size="28" font-weight="700">
+    127.0.0.1:1081
+  </text>
+
+  <text x="170" y="924" fill="#5E6655" font-family="Avenir Next, Helvetica Neue, Arial, sans-serif" font-size="22" font-weight="500">
+    Превью локальной control panel проекта
+  </text>
+</svg>

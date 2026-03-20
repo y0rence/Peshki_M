@@ -1,0 +1,82 @@
+<svg width="1600" height="980" viewBox="0 0 1600 980" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="120" y1="80" x2="1500" y2="900" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F3ECE2"/>
+      <stop offset="1" stop-color="#ECE3D7"/>
+    </linearGradient>
+    <filter id="shadow" x="170" y="90" width="1260" height="800" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="28" stdDeviation="32" flood-color="#2A3022" flood-opacity="0.18"/>
+    </filter>
+    <filter id="cardShadow" x="250" y="190" width="1100" height="560" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="18" stdDeviation="20" flood-color="#2A3022" flood-opacity="0.12"/>
+    </filter>
+  </defs>
+
+  <rect width="1600" height="980" fill="url(#bg)"/>
+  <circle cx="248" cy="162" r="168" fill="#0D7A51" fill-opacity="0.08"/>
+  <circle cx="1370" cy="820" r="210" fill="#C28035" fill-opacity="0.10"/>
+
+  <g filter="url(#shadow)">
+    <rect x="220" y="130" width="1160" height="720" rx="28" fill="#F5EFE6"/>
+    <rect x="220" y="130" width="1160" height="52" rx="28" fill="#F8F3EB"/>
+    <rect x="220" y="154" width="1160" height="28" fill="#F8F3EB"/>
+  </g>
+
+  <circle cx="264" cy="156" r="8" fill="#F26D6D"/>
+  <circle cx="290" cy="156" r="8" fill="#F5C451"/>
+  <circle cx="316" cy="156" r="8" fill="#67C26F"/>
+
+  <g filter="url(#cardShadow)">
+    <rect x="268" y="216" width="1064" height="252" rx="28" fill="#FFFCF4" fill-opacity="0.92" stroke="#2A3022" stroke-opacity="0.10"/>
+    <rect x="268" y="500" width="1064" height="148" rx="28" fill="#FFFCF4" fill-opacity="0.92" stroke="#2A3022" stroke-opacity="0.10"/>
+    <rect x="268" y="682" width="1064" height="126" rx="28" fill="#FFFCF4" fill-opacity="0.92" stroke="#2A3022" stroke-opacity="0.10"/>
+  </g>
+
+  <text x="308" y="294" fill="#1F241C" font-family="Avenir Next, Helvetica Neue, Arial, sans-serif" font-size="54" font-weight="800">
+    Запустить VPN Client
+  </text>
+  <text x="308" y="348" fill="#5E6655" font-family="Avenir Next, Helvetica Neue, Arial, sans-serif" font-size="24" font-weight="500">
+    Выберите режим работы. Можно открыть control panel в браузере
+  </text>
+  <text x="308" y="382" fill="#5E6655" font-family="Avenir Next, Helvetica Neue, Arial, sans-serif" font-size="24" font-weight="500">
+    или остаться внутри отдельного окна приложения.
+  </text>
+  <text x="308" y="432" fill="#5E6655" font-family="Avenir Next, Helvetica Neue, Arial, sans-serif" font-size="22" font-weight="500">
+    Конфиг не выбран. Загрузите JSON-профиль для запуска runtime.
+  </text>
+
+  <rect x="308" y="454" width="214" height="48" rx="18" fill="#F2E0BC"/>
+  <text x="415" y="485" text-anchor="middle" fill="#714614" font-family="Avenir Next, Helvetica Neue, Arial, sans-serif" font-size="20" font-weight="700">
+    Выбрать конфиг
+  </text>
+
+  <text x="308" y="580" fill="#1F241C" font-family="Avenir Next, Helvetica Neue, Arial, sans-serif" font-size="22" font-weight="700">
+    Выберите, как открыть панель управления
+  </text>
+  <rect x="308" y="604" width="272" height="54" rx="18" fill="#333D30"/>
+  <text x="444" y="638" text-anchor="middle" fill="#FFFDF8" font-family="Avenir Next, Helvetica Neue, Arial, sans-serif" font-size="20" font-weight="700">
+    Открыть в браузере
+  </text>
+
+  <rect x="602" y="604" width="294" height="54" rx="18" fill="#0D7A51"/>
+  <text x="749" y="638" text-anchor="middle" fill="#FFFDF8" font-family="Avenir Next, Helvetica Neue, Arial, sans-serif" font-size="20" font-weight="700">
+    Остаться в приложении
+  </text>
+
+  <text x="308" y="758" fill="#1F241C" font-family="Avenir Next, Helvetica Neue, Arial, sans-serif" font-size="22" font-weight="700">
+    Статус запуска
+  </text>
+  <text x="308" y="794" fill="#5E6655" font-family="Avenir Next, Helvetica Neue, Arial, sans-serif" font-size="22" font-weight="500">
+    Ожидание запуска.
+  </text>
+
+  <rect x="1038" y="262" width="230" height="178" rx="22" fill="#F3EDE2"/>
+  <rect x="1068" y="294" width="170" height="12" rx="6" fill="#D7CDBA"/>
+  <rect x="1068" y="328" width="142" height="12" rx="6" fill="#D7CDBA"/>
+  <rect x="1068" y="362" width="184" height="12" rx="6" fill="#D7CDBA"/>
+  <rect x="1068" y="396" width="118" height="12" rx="6" fill="#D7CDBA"/>
+
+  <text x="220" y="910" fill="#5E6655" font-family="Avenir Next, Helvetica Neue, Arial, sans-serif" font-size="22" font-weight="500">
+    Превью окна native launcher для macOS
+  </text>
+</svg>
