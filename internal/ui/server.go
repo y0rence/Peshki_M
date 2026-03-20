@@ -1,7 +1,10 @@
 package ui
 
 import (
+	"bytes"
 	"context"
+	"crypto/rand"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -13,6 +16,11 @@ import (
 	"time"
 
 	"vpnclient/internal/config"
+)
+
+const (
+	csrfHeaderName       = "X-VPNClient-CSRF"
+	csrfTokenPlaceholder = "__VPNCLIENT_CSRF_TOKEN__"
 )
 
 type vpnService interface {
@@ -61,6 +69,8 @@ type Server struct {
 	mux            *http.ServeMux
 	defaultProfile *config.Profile
 	supportURL     string
+	csrfToken      string
+	indexPage      []byte
 
 	mu     sync.RWMutex
 	status SessionStatus
@@ -85,7 +95,9 @@ func NewServerWithOptions(
 		mux:            http.NewServeMux(),
 		defaultProfile: cloneProfilePointer(options.DefaultProfile),
 		supportURL:     strings.TrimSpace(options.SupportURL),
+		csrfToken:      mustGenerateCSRFToken(),
 	}
+	server.indexPage = bytes.ReplaceAll(indexHTML, []byte(csrfTokenPlaceholder), []byte(server.csrfToken))
 	server.status = server.buildStatus(nil, "idle", server.initialMessage(), false)
 	server.routes()
 	return server
@@ -135,7 +147,7 @@ func (s *Server) routes() {
 func (s *Server) handleIndex(w http.ResponseWriter, _ *http.Request) {
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
-	_, _ = w.Write(indexHTML)
+	_, _ = w.Write(s.indexPage)
 }
 
 func (s *Server) handleStatus(w http.ResponseWriter, _ *http.Request) {
@@ -147,6 +159,10 @@ func (s *Server) handleStatus(w http.ResponseWriter, _ *http.Request) {
 }
 
 func (s *Server) handleValidate(w http.ResponseWriter, r *http.Request) {
+	if !s.requireTrustedMutation(w, r) {
+		return
+	}
+
 	profile, err := s.decodeProfileRequest(w, r)
 	if err != nil {
 		return
@@ -160,6 +176,10 @@ func (s *Server) handleValidate(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) handleConnect(w http.ResponseWriter, r *http.Request) {
+	if !s.requireTrustedMutation(w, r) {
+		return
+	}
+
 	profile, err := s.decodeProfileRequest(w, r)
 	if err != nil {
 		return
@@ -168,6 +188,10 @@ func (s *Server) handleConnect(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) handleConnectDefault(w http.ResponseWriter, r *http.Request) {
+	if !s.requireTrustedMutation(w, r) {
+		return
+	}
+
 	if s.defaultProfile == nil {
 		writeError(w, http.StatusBadRequest, fmt.Errorf("preset profile is not configured"))
 		return
@@ -181,10 +205,13 @@ func (s *Server) handleConnectProfile(
 	profile config.Profile,
 ) {
 	s.mu.Lock()
-	if s.status.Connected {
+	if s.status.Connected || s.status.State == "connecting" {
 		current := cloneStatus(s.status)
 		s.mu.Unlock()
 		currentName := "active session"
+		if current.State == "connecting" {
+			currentName = "session startup"
+		}
 		if current.Profile != nil && current.Profile.Name != "" {
 			currentName = current.Profile.Name
 		}
@@ -225,6 +252,19 @@ func (s *Server) handleConnectProfile(
 }
 
 func (s *Server) handleDisconnect(w http.ResponseWriter, r *http.Request) {
+	if !s.requireTrustedMutation(w, r) {
+		return
+	}
+
+	s.mu.RLock()
+	status := cloneStatus(s.status)
+	s.mu.RUnlock()
+
+	if status.State == "connecting" {
+		writeError(w, http.StatusConflict, fmt.Errorf("a VPN session is still starting"))
+		return
+	}
+
 	disconnectCtx, cancel := context.WithTimeout(r.Context(), 5*time.Second)
 	defer cancel()
 
@@ -236,7 +276,7 @@ func (s *Server) handleDisconnect(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	status := s.buildStatus(
+	nextStatus := s.buildStatus(
 		nil,
 		"idle",
 		"Отключено. Временные системные proxy-настройки восстановлены.",
@@ -244,10 +284,10 @@ func (s *Server) handleDisconnect(w http.ResponseWriter, r *http.Request) {
 	)
 
 	s.mu.Lock()
-	s.status = status
+	s.status = nextStatus
 	s.mu.Unlock()
 
-	writeJSON(w, http.StatusOK, status)
+	writeJSON(w, http.StatusOK, nextStatus)
 }
 
 func (s *Server) decodeProfileRequest(w http.ResponseWriter, r *http.Request) (config.Profile, error) {
@@ -378,4 +418,33 @@ func cloneProfilePointer(profile *config.Profile) *config.Profile {
 func profileSummaryPointer(summary ProfileSummary) *ProfileSummary {
 	value := summary
 	return &value
+}
+
+func mustGenerateCSRFToken() string {
+	buf := make([]byte, 32)
+	if _, err := rand.Read(buf); err != nil {
+		panic(fmt.Sprintf("generate CSRF token: %v", err))
+	}
+	return hex.EncodeToString(buf)
+}
+
+func (s *Server) requireTrustedMutation(w http.ResponseWriter, r *http.Request) bool {
+	token := strings.TrimSpace(r.Header.Get(csrfHeaderName))
+	if token == "" || token != s.csrfToken {
+		writeError(w, http.StatusForbidden, fmt.Errorf("missing or invalid CSRF token"))
+		return false
+	}
+
+	origin := strings.TrimSpace(r.Header.Get("Origin"))
+	if origin == "" {
+		return true
+	}
+
+	expectedOrigin := "http://" + r.Host
+	if origin != expectedOrigin {
+		writeError(w, http.StatusForbidden, fmt.Errorf("unexpected request origin %q", origin))
+		return false
+	}
+
+	return true
 }
