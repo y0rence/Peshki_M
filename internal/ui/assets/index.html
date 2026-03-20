@@ -458,6 +458,7 @@
 
   <script>
     const storageKey = "vpnclient.controlpanel.config";
+    const csrfToken = "__VPNCLIENT_CSRF_TOKEN__";
     const configInput = document.getElementById("configInput");
     const fileInput = document.getElementById("fileInput");
     const validateButton = document.getElementById("validateButton");
@@ -592,7 +593,10 @@
     async function apiPost(url, body) {
       const response = await fetch(url, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "X-VPNClient-CSRF": csrfToken,
+        },
         body: JSON.stringify(body),
       });
 
